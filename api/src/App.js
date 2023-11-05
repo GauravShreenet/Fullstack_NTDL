@@ -94,18 +94,46 @@ function App() {
     setIdsToDelete(temArg);
   };
 
-  const switchTask = async (obj) => {
-    //send update to the server
+  const entry = taskList.filter(item => item.type === "entry");
+  const bad = taskList.filter(item => item.type === "bad");
 
+  const switchTask = async(obj) => {
+    console.log(obj);
+
+    //send update to the server
     const result = await updateTask(obj);
     setResp(result);
-
     //if success, fetch all the data
-    result.status === "success" && getTasks();
+
+    result?.status === 'success' && getTasks();
   };
 
-  const entry = taskList.filter((item) => item.type === "entry");
-  const bad = taskList.filter((item) => item.type === "bad");
+  const handelOnAllCheck = (e) => {
+    const {checked, value} = e.target;
+    console.log(checked, value)
+
+    if(value === 'entry'){
+      const entryIds = entry.map((item) => item._id);
+      console.log(entryIds);
+      if (checked){
+        //if checked add the ids to idsToDelete
+        setIdsToDelete([...idsToDelete, ...entryIds] )
+      } else{
+       //else remove entryIds from the idsToDelete
+       const tempArIds = idsToDelete.filter((id) => !entryIds.includes(id));
+       setIdsToDelete(tempArIds);
+      }
+    } else {
+      const badIds = bad.map((item)=> item._id)
+
+      if(checked){
+        setIdsToDelete([...idsToDelete, ...badIds])
+      } else {
+        const tempAryIds = idsToDelete.filter((id) => !badIds.includes(id));
+        setIdsToDelete(tempAryIds);
+      }
+    }
+  }
 
   return (
     <div class="wrapper">
